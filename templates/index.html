@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>太极八段锦 · 智能修习</title>
+    <style>
+        body { background-color: #fcfaf2; font-family: "STKaiti", "KaiTi", serif; color: #3e3a39; margin: 0; padding: 20px; }
+        h1 { text-align: center; color: #8b4513; border-bottom: 2px solid #d3c7a9; padding-bottom: 10px; margin-bottom: 20px; }
+
+        .layout-container { display: flex; gap: 30px; max-width: 1200px; margin: 0 auto; }
+        .left-panel { flex: 4; background: #fffef9; border: 1px solid #d3c7a9; padding: 20px; box-shadow: 2px 2px 10px rgba(0,0,0,0.05); border-radius: 8px; display: flex; flex-direction: column; }
+        .right-panel { flex: 5; background: #fffef9; border: 1px solid #d3c7a9; padding: 20px; box-shadow: 2px 2px 10px rgba(0,0,0,0.05); border-radius: 8px; display: flex; flex-direction: column; }
+
+        .section-title { color: #8b4513; border-left: 4px solid #8b4513; padding-left: 10px; margin-top: 0; display: flex; justify-content: space-between; align-items: center;}
+        .info-box { background: #f9f6e8; padding: 15px; margin-bottom: 20px; border-radius: 4px; border: 1px dashed #d3c7a9; }
+
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: center; }
+        .data-table th, .data-table td { border: 1px solid #d3c7a9; padding: 12px; }
+        .data-table th { background: #e8e2d2; color: #8b4513; }
+        .score-highlight { font-size: 1.5em; font-weight: bold; }
+
+        .upload-area { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #8b4513; background: #faf8f0; border-radius: 8px; cursor: pointer; transition: 0.3s; min-height: 400px; }
+        .upload-area:hover { background: #f0eadd; }
+        .btn { background-color: #8b4513; color: white; border: none; padding: 12px 25px; font-size: 1.1em; font-family: inherit; cursor: pointer; border-radius: 4px; margin-top: 15px; }
+        .btn:hover { background-color: #5c2e0b; }
+
+        .chat-container { border: 1px solid #d3c7a9; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; height: 350px; }
+        .chat-box { flex-grow: 1; padding: 15px; overflow-y: auto; background: #faf8f0; }
+        .msg { margin-bottom: 12px; padding: 10px 14px; border-radius: 6px; max-width: 85%; line-height: 1.5; }
+        .msg-ai { background: #f0f4eb; float: left; clear: both; border: 1px solid #dbe3d0; }
+        .msg-user { background: #e6e0d3; float: right; clear: both; }
+        .chat-input-area { display: flex; border-top: 1px solid #d3c7a9; background: white; }
+        .chat-input-area input { flex-grow: 1; padding: 12px; border: none; outline: none; font-family: inherit; font-size: 1em; }
+        .chat-input-area button { background: #8b4513; color: white; border: none; padding: 0 20px; cursor: pointer; font-family: inherit; }
+
+        /* 视频控制按钮 */
+        .video-controls { display: flex; gap: 10px; justify-content: center; margin-bottom: 15px; }
+        .v-btn { background: #e8e2d2; border: 1px solid #d3c7a9; color: #8b4513; padding: 5px 15px; cursor: pointer; border-radius: 4px; font-family: inherit; }
+        .v-btn:hover { background: #d3c7a9; }
+    </style>
+</head>
+<body>
+
+    <h1>UbiQigongSmart · 智能修习平台</h1>
+
+    <div class="layout-container">
+
+        <div class="left-panel">
+            <h3 class="section-title">
+                视频跟练与细节指导
+                <span id="currentActionTitle" style="font-size: 0.8em; color: #666;">双手托天理三焦</span>
+            </h3>
+
+            <video id="demoVideo" controls style="width: 100%; height: 250px; background: #000; border-radius: 4px; margin-bottom: 10px;">
+                <source src="/static/videos/action_0.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+
+            <div class="video-controls">
+                <button class="v-btn" onclick="prevAction()">上一式</button>
+                <button class="v-btn" onclick="nextAction()">下一式</button>
+            </div>
+
+            <div class="info-box">
+                <strong>【动作要领】</strong>
+                <ul id="actionEssentials" style="margin-top: 5px; padding-left: 20px;">
+                    <li>两手交叉上托，如托天状。</li>
+                    <li>拔伸腰背，挺胸收腹。</li>
+                    <li>上托时吸气，还原时呼气。</li>
+                </ul>
+            </div>
+
+            <h3 class="section-title">修习文化墙</h3>
+            <div class="info-box">
+                <p id="cultureWall" style="margin-top: 0;"><strong>【经络与气血】</strong> 通过双手上托，拉伸胸腹，调理三焦气机，促进全身气血运行，改善内脏功能。</p>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            {% if error %}
+                <div style="background: #ffe4e1; color: #cd5c5c; padding: 10px; margin-bottom: 15px; border-radius: 4px; text-align: center;">{{ error }}</div>
+            {% endif %}
+
+            {% if not result %}
+                <h3 class="section-title">演练评估</h3>
+                <form action="/upload" method="POST" enctype="multipart/form-data" id="uploadForm" style="height: 100%; display: flex; flex-direction: column;">
+                    <input type="file" name="video" accept="video/*" capture="environment" id="videoInput" style="display: none;" onchange="document.getElementById('uploadForm').submit(); document.getElementById('loadingText').style.display='block';">
+
+                    <div class="upload-area" onclick="document.getElementById('videoInput').click();">
+                        <img src="https://img.icons8.com/ios/100/8b4513/camera--v1.png" alt="Camera" style="margin-bottom: 15px;">
+                        <h2 style="color: #8b4513; margin: 0;">开启手机录制</h2>
+                        <p style="color: #666; font-size: 0.9em;">录制完毕后系统将自动上传并进行推演</p>
+                        <p id="loadingText" style="display: none; color: #2e8b57; font-weight: bold; margin-top: 20px;">正在进行 AI 深度推演，请稍候...</p>
+                    </div>
+                </form>
+            {% else %}
+                <h3 class="section-title">推演报告 - {{ result.action_name }}</h3>
+
+                <table class="data-table">
+                    <tr><th>动作匹配度</th><th>演练时长</th><th>估测心率</th></tr>
+                    <tr>
+                        <td class="score-highlight" style="color: {{ 'green' if result.score > 0.8 else 'red' }}">{{ result.score | round(2) }}</td>
+                        <td>{{ result.duration | round(1) }} 秒</td>
+                        <td>{{ result.heart_rate }} BPM</td>
+                    </tr>
+                </table>
+
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="{{ result.vis_image }}" alt="骨骼对合图" style="max-width: 100%; max-height: 250px; border: 2px solid #d3c7a9; border-radius: 4px;">
+                </div>
+
+                <div class="info-box" style="font-size: 0.95em; line-height: 1.6;">
+                    <p style="margin-top:0;"><strong>【诊断分析】</strong> {{ result.feedback.evaluation }} {{ result.feedback.analysis }}</p>
+                    <p><strong>【生理评估】</strong> {{ result.feedback.hr_eval }}</p>
+                    <p style="margin-bottom:0;"><strong>【调理建议】</strong> {{ result.feedback.suggestion }} {{ result.feedback.encouragement }}</p>
+                </div>
+
+                <h3 class="section-title" style="margin-top: 10px;">名医问诊</h3>
+                <div class="chat-container">
+                    <div class="chat-box" id="chatBox">
+                        <div class="msg msg-ai">老朽已阅您的演练报告。若对气息运行或姿态细节有任何疑问，尽可道来。</div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="userInput" placeholder="例如：师傅，我为何感觉肩膀酸痛？" onkeypress="if(event.key === 'Enter') sendChatMsg();">
+                        <button onclick="sendChatMsg()">请教</button>
+                    </div>
+                </div>
+
+                <input type="hidden" id="actionId" value="{{ result.action_id }}">
+                <input type="hidden" id="actionScore" value="{{ result.score }}">
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="/" class="btn" style="text-decoration: none;">返回重新录制</a>
+                </div>
+
+                <script>
+                    function sendChatMsg() {
+                        const input = document.getElementById('userInput');
+                        const msg = input.value.trim();
+                        if(!msg) return;
+
+                        const actionId = document.getElementById('actionId').value;
+                        const actionScore = document.getElementById('actionScore').value;
+                        const chatBox = document.getElementById('chatBox');
+
+                        chatBox.innerHTML += `<div class="msg msg-user">${msg}</div>`;
+                        input.value = '';
+                        chatBox.scrollTop = chatBox.scrollHeight;
+
+                        fetch('/chat', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ message: msg, action: actionId, score: actionScore })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            let reply = data.reply.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+                            chatBox.innerHTML += `<div class="msg msg-ai">${reply}</div>`;
+                            chatBox.scrollTop = chatBox.scrollHeight;
+                        });
+                    }
+                </script>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+
+    const baduanjinData = [
+        {
+            title: "双手托天理三焦",
+            video: "双手托天理三焦.mp4",
+            essentials: ["两手交叉上托，如托天状。", "拔伸腰背，挺胸收腹。", "上托时吸气，还原时呼气。"],
+            culture: "通过双手上托，拉伸胸腹，调理三焦气机，促进全身气血运行，改善内脏功能。"
+        },
+        {
+            title: "左右开弓似射雕",
+            video: "左右开弓似射雕.mp4",
+            essentials: ["沉肩坠肘，坐腕舒指。", "马步平稳，重心居中。", "目光如炬，意在指尖。"],
+            culture: "扩胸展肩，可疏通肺经，宽胸理气。拉弓时吸气，归位时呼气，气沉丹田。"
+        },
+        {
+            title: "调理脾胃须单举",
+            video: "调理脾胃须单举.mp4",
+            essentials: ["单臂上举，单臂下按。", "力达掌根，对拉拔长。", "上举吸气，下按呼气。"],
+            culture: "一上一下的对拉，使中焦牵伸，按摩脾胃，促进消化吸收功能。"
+        },
+        {
+            title: "五劳七伤往后瞧",
+            video: "五劳七伤往后瞧.mp4",
+            essentials: ["转头旋臂，向后远眺。", "身正步稳，不可扭身。", "转头吸气，还原呼气。"],
+            culture: "刺激颈部大椎穴，解除中枢神经系统疲劳，调理脏腑之“五劳”与情绪之“七伤”。"
+        },
+        {
+            title: "摇头摆尾去心火",
+            video: "摇头摆尾去心火.mp4",
+            essentials: ["马步扎实，摇转颈腰。", "动作和缓，连贯协调。", "摇转呼气，还原吸气。"],
+            culture: "通过大幅度的躯干摇摆，交通心肾，降伏心火，安神定志。"
+        },
+        {
+            title: "双手攀足固肾腰",
+            video: "双手攀足固肾腰.mp4",
+            essentials: ["俯身攀足，抬头挺胸。", "膝盖挺直，不可弯曲。", "向下呼气，起身吸气。"],
+            culture: "大幅度前屈后伸，强健腰背肌肉，固精益肾，疏通督脉与膀胱经。"
+        },
+        {
+            title: "攒拳怒目增气力",
+            video: "攒拳怒目增气力.mp4",
+            essentials: ["马步冲拳，怒目圆睁。", "拳握紧，力达拳面。", "出拳呼气，收拳吸气。"],
+            culture: "“肝主筋，开窍于目”。怒目冲拳可舒肝利胆，激发内在气力。"
+        },
+        {
+            title: "背后七颠百病消",
+            video: "背后七颠百病消.mp4",
+            essentials: ["提踵收腹，平稳下落。", "咬牙叩齿，全身放松。", "提踵吸气，下落呼气。"],
+            culture: "通过轻微的震动，疏通全身经络，消除疲劳，达到“百病消”的收功之效。"
+        }
+    ];
+
+    let currentIndex = 0;
+    const videoPlayer = document.getElementById('demoVideo');
+    const titleEl = document.getElementById('currentActionTitle');
+    const essentialsEl = document.getElementById('actionEssentials');
+    const cultureEl = document.getElementById('cultureWall');
+
+    // 核心加载函数
+    function loadAction(index) {
+        const data = baduanjinData[index];
+        if (!data) return;
+
+        currentIndex = index;
+        titleEl.textContent = data.title;
+
+
+        essentialsEl.innerHTML = '';
+        data.essentials.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            essentialsEl.appendChild(li);
+        });
+
+
+        cultureEl.innerHTML = `<strong>【经络与气血】</strong> ${data.culture}`;
+
+
+        videoPlayer.src = "/local_videos/" + data.video;
+        videoPlayer.load();
+        videoPlayer.play().catch(e => console.log("等待交互播放"));
+    }
+
+    // 按钮切换逻辑
+    function prevAction() {
+        currentIndex = (currentIndex - 1 + baduanjinData.length) % baduanjinData.length;
+        loadAction(currentIndex);
+    }
+
+    function nextAction() {
+        currentIndex = (currentIndex + 1) % baduanjinData.length;
+        loadAction(currentIndex);
+    }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        /
+        const resultId = "{{ result.action_id if result and result.action_id < 8 else '0' }}";
+        loadAction(parseInt(resultId));
+    });
+</script>
+
+</body>
+</html>
