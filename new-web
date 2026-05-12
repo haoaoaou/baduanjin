@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>八段锦智能指导</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2E56A0',      // 主色调：深绿色，代表健康、自然1976d2
+            secondary: '#f57c00',    // 辅助色：橙色，代表活力
+            accent: '#2e7d32',       // 强调色：蓝色，用于交互元素
+            light: '#B6C7EA',        // 浅色：浅绿色背景
+            dark: '#28437C',         // 深色：深绿色文字
+          },
+          fontFamily: {
+            sans: ['"Microsoft YaHei"', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+      }
+      .gradient-bg {
+        background: linear-gradient(135deg, #C3D0ED 10%, #D9C5EC 100%);
+      }
+      .pulse-animation {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.8;
+        }
+      }
+    }
+  </style>
+</head>
+
+<body class="gradient-bg min-h-screen font-sans text-gray-800">
+  <div class="container mx-auto px-4 py-6 max-w-7xl">
+    <!-- 页面标题 -->
+    <header class="mb-6 text-center">
+      <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-primary mb-2">八段锦智能指导</h1>
+      <p class="text-gray-600">传统养生，智能指导，科学锻炼</p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- 左侧区域 - 动作监测 -->
+      <div class="lg:col-span-3 bg-white rounded-xl p-5 card-shadow transition-all duration-300 hover:translate-y-[-5px]">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold text-primary flex items-center">
+            <i class="fa fa-line-chart mr-2"></i>动作监测
+          </h2>
+          <span class="bg-green-100 text-primary text-xs px-2 py-1 rounded-full">实时</span>
+        </div>
+
+    <div class="relative rounded-lg overflow-hidden mb-4 border-2 border-gray-100">
+     <img src="qigong_project/images/真人.jpg"
+                 alt="动作捕捉画面"
+                 class="w-full h-auto">
+       <form method="post" action="/upload" enctype="multipart/form-data">
+            <div class="upload-area">
+                <h2>上传视频文件</h2>
+                <p>支持格式: MP4, AVI, MOV (最大100MB)</p>
+                <input type="file" name="video" accept="video/*" required>
+             </div>
+                <input type="submit" value="开始推理">
+            </form>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">当前动作</p>
+            <p class="font-medium">摇头摆尾去心火</p>
+          </div>
+
+          <div>
+            <p class="text-sm text-gray-500 mb-1">心率</p>
+            <div class="flex items-center">
+              <p class="font-medium mr-2">72 <span class="text-sm">bpm</span></p>
+              <i class="fa fa-heart text-red-500 pulse-animation"></i>
+            </div>
+          </div>
+
+          <div>
+            <p class="text-sm text-gray-500 mb-1">动作匹配度</p>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div class="bg-secondary h-2.5 rounded-full" style="width: 92%"></div>
+            </div>
+            <p class="text-right text-sm mt-1 text-secondary font-medium">92%</p>
+          </div>
+
+          <div>
+            <p class="text-sm text-gray-500 mb-1">已练习时长</p>
+            <p class="font-medium">12分25秒</p>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-gray-100">
+          <button class="w-full bg-primary hover:bg-dark text-white py-2 px-4 rounded-lg transition-all duration-300 flex items-center justify-center">
+            <i class="fa fa-refresh mr-2"></i>重新开始
+          </button>
+        </div>
+      </div>
+
+      <!-- 中间区域 - 标准动作示范 -->
+      <div class="lg:col-span-6 bg-white rounded-xl p-5 card-shadow transition-all duration-300 hover:translate-y-[-5px]">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold text-primary flex items-center">
+            <i class="fa fa-play-circle mr-2"></i>标准动作示范
+          </h2>
+          <div class="flex space-x-2">
+            <button class="bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-all duration-300">
+              <i class="fa fa-step-backward text-gray-600"></i>
+            </button>
+<!--            <button class="bg-primary hover:bg-dark text-white p-2 rounded-full transition-all duration-300">-->
+<!--              <i class="fa fa-pause"></i>-->
+<!--            </button>-->
+            <button class="bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-all duration-300">
+              <i class="fa fa-step-forward text-gray-600"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="relative rounded-lg overflow-hidden mb-6 bg-gray-100 aspect-video flex items-center justify-center">
+          <img src="qigong_project/images/微信图片_20250825103949_550_2.png"
+               alt="八段锦标准动作示范"
+               class="w-full h-full object-cover">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <button class="w-16 h-16 bg-primary/80 hover:bg-primary text-white rounded-full flex items-center justify-center transition-all duration-300 scale-100 hover:scale-110">
+              <i class="fa fa-play text-xl ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <h3 class="text-lg font-semibold mb-3 text-center">第3式：摇头摆尾去心火</h3>
+
+        <!-- 动作进度导航 -->
+        <div class="mb-6">
+          <p class="text-sm text-gray-500 mb-2 text-center">八段锦动作进度</p>
+          <div class="flex justify-between items-center">
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm mb-1">1</div>
+              <span class="text-xs text-gray-500 hidden sm:block">两手托天理三焦</span>
+            </div>
+            <div class="flex-1 h-1 mx-1 bg-gray-200 relative">
+              <div class="absolute inset-0 bg-primary"></div>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm mb-1">2</div>
+              <span class="text-xs text-gray-500 hidden sm:block">左右开弓似射雕</span>
+            </div>
+            <div class="flex-1 h-1 mx-1 bg-gray-200 relative">
+              <div class="absolute inset-0 bg-primary"></div>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm mb-1">3</div>
+              <span class="text-xs font-medium hidden sm:block">摇头摆尾去心火</span>
+            </div>
+            <div class="flex-1 h-1 mx-1 bg-gray-200"></div>
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm mb-1">4</div>
+              <span class="text-xs text-gray-500 hidden sm:block">五劳七伤往后瞧</span>
+            </div>
+            <div class="flex-1 h-1 mx-1 bg-gray-200"></div>
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm mb-1">5+</div>
+              <span class="text-xs text-gray-500 hidden sm:block">后续动作</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 动作要点 -->
+        <div class="bg-light rounded-lg p-4">
+          <h4 class="font-medium text-primary mb-2 flex items-center">
+            <i class="fa fa-info-circle mr-2"></i>动作要点
+          </h4>
+          <ul class="text-sm space-y-1 list-disc list-inside">
+            <li>两脚分开，与肩同宽，屈膝半蹲</li>
+            <li>双手按在膝盖上，虎口向内</li>
+            <li>缓缓摇头，同时腰部做顺时针、逆时针旋转</li>
+            <li>动作缓慢柔和，呼吸自然</li>
+            <li>每次旋转时，尽量将动作做到位，但不要勉强</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 右侧区域 - 八段锦简介和数据分析 -->
+      <div class="lg:col-span-3 space-y-6">
+        <!-- 八段锦简介 -->
+        <div class="bg-white rounded-xl p-5 card-shadow transition-all duration-300 hover:translate-y-[-5px]">
+          <h2 class="text-xl font-bold text-primary mb-4 flex items-center">
+            <i class="fa fa-book mr-2"></i>八段锦简介
+          </h2>
+          <div class="space-y-3 text-sm">
+            <p>八段锦起源于北宋时期，由武学大师创编。通过模拟动物的动作，融合了古老的道家养生理念，形成了一套简洁而有效的锻炼方法。</p>
+            <p>随着时间的推移，八段锦逐渐传承发展，成为一种广泛流传的传统健身运动，被誉为中华传统文化的瑰宝。</p>
+            <p>经常练习可改善体质、调节身心、增强免疫力。</p>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-gray-100">
+            <button class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg transition-all duration-300 text-sm flex items-center justify-center">
+              <i class="fa fa-info-circle mr-2"></i>了解更多
+            </button>
+          </div>
+        </div>
+
+        <!-- 健康数据 -->
+        <div class="bg-white rounded-xl p-6 card-shadow transition-all duration-300 hover:translate-y-[-5px]">
+          <h2 class="text-xl font-bold text-primary mb-4 flex items-center">
+            <i class="fa fa-heartbeat mr-2"></i>健康数据
+          </h2>
+
+          <div class="space-y-6">
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-gray-500">平均心率</span>
+                <span class="font-medium">68 bpm</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-3">
+                <div class="bg-accent h-3 rounded-full" style="width: 65%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-gray-500">动作准确度</span>
+                <span class="font-medium">89%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-3">
+                <div class="bg-secondary h-3 rounded-full" style="width: 89%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-gray-500">今日练习时长</span>
+                <span class="font-medium">12分25秒</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-3">
+                <div class="bg-primary h-3 rounded-full" style="width: 40%"></div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-gray-100">
+              <div class="flex items-center justify-between bg-light rounded-lg p-4">
+                <div>
+                  <p class="text-xs text-gray-500">本周练习</p>
+                  <p class="font-medium">2/3 次</p>
+                </div>
+                <div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <i class="fa fa-trophy"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 分析区域 -->
+      <div class="lg:col-span-12 bg-white rounded-xl p-5 card-shadow">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold text-primary flex items-center">
+            <i class="fa fa-bar-chart mr-2"></i>动作分析与反馈
+          </h2>
+          <div class="flex space-x-3">
+            <button class="flex items-center bg-light hover:bg-green-200 text-primary px-4 py-2 rounded-lg transition-all duration-300 text-sm">
+              <i class="fa fa-volume-up mr-2"></i>语音指导
+            </button>
+            <button class="flex items-center bg-light hover:bg-green-200 text-primary px-4 py-2 rounded-lg transition-all duration-300 text-sm">
+              <i class="fa fa-comment mr-2"></i>提问咨询
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <p>您好！根据您当前进行的 “摇头摆尾去心火” 动作和您的心率数据，动作反馈与分析如下：</p>
+
+          <div>
+            <h3 class="font-bold text-gray-800 text-lg mb-2">1. 动作特征</h3>
+            <p>您当前练习的是八段锦中的 “摇头摆尾去心火” 。这是一个以腰脊为轴，带动全身的柔和旋转动作。其主要特征是：</p>
+            <ul class="list-disc list-inside ml-2 mt-1 space-y-1">
+              <li>心火疏导：通过躯干的俯仰与旋转，刺激脊柱与命门，调和心肾</li>
+              <li>动静结合：动作外柔内刚，看似舒缓，实则需要核心肌群的稳定发力</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-bold text-gray-800 text-lg mb-2">2. 肢体运动的基本特点</h3>
+            <p>您的肢体运动展现出了非常良好的状态：</p>
+            <ul class="list-disc list-inside ml-2 mt-1 space-y-1">
+              <li>灵活性与协调性：旋转过程中表现出色的身体灵活性和动作协调性</li>
+              <li>力量与控制的平衡：能保持身体稳定，证明了您拥有强大的核心力量</li>
+            </ul>
+          </div>
+
+          <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+            <h3 class="font-bold text-yellow-800 mb-1 flex items-center">
+              <i class="fa fa-lightbulb-o mr-2"></i>改进建议
+            </h3>
+            <p class="text-sm text-yellow-700">摇头时注意保持颈部放松，避免过度后仰。旋转腰部时，可以尝试幅度稍大一些，以更好地刺激相关穴位。呼吸节奏可以再放缓一些，与动作保持协调。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="mt-8 text-center text-gray-500 text-sm">
+      <p>八段锦智能指导系统 &copy; 2025 版权所有</p>
+    </footer>
+  </div>
+
+  <script>
+    // 检查图片加载状态
+    document.addEventListener('DOMContentLoaded', function() {
+      const images = document.querySelectorAll('img');
+
+      images.forEach(img => {
+        // 图片加载失败时显示提示
+        img.addEventListener('error', function() {
+          this.alt = '图片加载失败';
+          this.style.border = '2px solid #ff4444';
+          this.style.backgroundColor = '#fef0f0';
+          this.style.padding = '20px 0';
+          this.style.fontSize = '14px';
+          this.style.color = '#ff4444';
+          this.style.display = 'flex';
+          this.style.alignItems = 'center';
+          this.style.justifyContent = 'center';
+        });
+      });
+
+      // 模拟实时数据更新
+      setInterval(() => {
+        const secondsElement = document.querySelector('.font-medium:last-of-type');
+        if (secondsElement) {
+          const text = secondsElement.textContent;
+          const match = text.match(/(\d+)分(\d+)秒/);
+          if (match) {
+            let minutes = parseInt(match[1]);
+            let seconds = parseInt(match[2]) + 1;
+
+            if (seconds >= 60) {
+              seconds = 0;
+              minutes += 1;
+            }
+
+            secondsElement.textContent = `${minutes}分${seconds.toString().padStart(2, '0')}秒`;
+          }
+        }
+      }, 1000);
+    });
+  </script>
+
+</body>
+
+</html>
